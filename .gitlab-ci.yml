@@ -1,1 +1,41 @@
-a
+stages:
+  - test
+  - deploy
+
+variables:
+  APP_ENV: testing
+  # Tambahkan variabel lain jika perlu
+
+before_script:
+  - echo "Starting CI/CD pipeline..."
+
+# ========================
+# TESTING
+# ========================
+test_job:
+  stage: test
+  tags:
+    - deploy 
+  script:
+    - echo "Run PHPUnit"
+    - ./vendor/bin/phpunit
+    # Laravel example:
+    # - composer install --no-interaction --prefer-dist
+    # - php artisan test
+
+# ========================
+# DEPLOY
+# ========================
+deploy:
+  stage: deploy
+  tags:
+    - deploy       # Harus sama dengan tag runner yang sudah didaftarkan
+  script:
+    - echo "Deploying Laravel to server..."
+    # Setup SSH
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H 192.168.56.102 >> ~/.ssh/known_hosts
+    # Jalankan Envoy deployment
+    - php vendor/bin/envoy run deploy --branch=$CI_COMMIT_REF_NAME          # Hanya jalankan deploy di branch main (bisa ganti master atau production)
