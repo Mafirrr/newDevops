@@ -24,7 +24,7 @@ $branch = $branch ?? 'master';
 # 1. PULL TERBARU
 # ========================
 @task('pull_repository')
-    git config --global --add safe.directory /var/www/newlara
+    git config --global --add safe.directory /var/www/wsDevops
     echo "Pull latest code"
 
     cd {{ $repo_dir }}
